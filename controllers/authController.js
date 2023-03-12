@@ -13,7 +13,7 @@ module.exports = {
         errors: [
           {
             param: "phone",
-            msg: "Tên người dùng/ Số điện thoại/ Email không đúng",
+            msg: "Số điện thoại không đúng hoặc chưa được đăng ký",
           },
         ],
       });
