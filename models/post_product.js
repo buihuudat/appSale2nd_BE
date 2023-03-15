@@ -20,14 +20,13 @@ const Location = new mongoose.Schema(
 
 const Post_product = new mongoose.Schema(
   {
+    user: mongoose.Types.ObjectId,
     location: [Location],
-    image: [Image],
-    name: String,
+    images: [Image],
+    title: String,
     price: Number,
     category: String,
-    amount: Number,
     description: String,
-    discount: Number,
     status_check_post: {
       type: Boolean,
       default: false,

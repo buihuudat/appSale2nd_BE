@@ -1,10 +1,9 @@
 const post_product = require("../models/post_product");
 
 module.exports = {
-  create: async (req, req) => {
+  create: async (req, res) => {
     try {
       const postProduct = await post_product.create(req.body);
-
       return res.status(201).json(postProduct);
     } catch (e) {
       return res.status(500).json(e);
