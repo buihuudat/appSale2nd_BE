@@ -28,8 +28,9 @@ const Post_product = new mongoose.Schema(
     category: String,
     description: String,
     status_check_post: {
-      type: Boolean,
-      default: false,
+      type: String,
+      enum: ["access", "pending", "refuse"],
+      default: "pending",
     },
   },
   { timestamps: true }

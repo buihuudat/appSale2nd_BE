@@ -20,19 +20,33 @@ module.exports = {
     }
   },
   updateStatusPost: async (req, res) => {
-    const post = await post_product.findByIdAndUpdate(req.body._id, {
-      status_check_post: true,
-    });
-    if (!post) {
-      return res.status(500).json({ message: "Post not found" });
+    const { status_check_post } = req.body;
+    try {
+      const post = await post_product.findByIdAndUpdate(req.body._id, {
+        status_check_post,
+      });
+      if (!post) {
+        return res.status(500).json({ message: "Post not found" });
+      }
+      return res.status(200).json(post);
+    } catch (e) {
+      return res.status(500).json(e);
     }
-    return req.status(200).json(post);
   },
 
   gets: async (req, res) => {
     try {
       const posts = await post_product.find();
       return res.status(200).json(posts);
+    } catch (e) {
+      return res.status(500).json(e);
+    }
+  },
+
+  delete: async (req, res) => {
+    try {
+      const post = await post_product.findByIdAndDelete(req.params.id);
+      return res.status(200).json(post);
     } catch (e) {
       return res.status(500).json(e);
     }

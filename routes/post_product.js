@@ -16,6 +16,7 @@ router.post(
 );
 router.get("/", postController.gets);
 router.put("/", postController.update);
-router.put("/update-status", postController.updateStatusPost);
+router.put("/:id", postController.updateStatusPost);
+router.delete("/:id", postController.delete);
 
 module.exports = router;
