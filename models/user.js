@@ -1,5 +1,16 @@
 const mongoose = require("mongoose");
 
+const Follow = new mongoose.Schema({
+  follower: {
+    type: Number,
+    default: 0,
+  },
+  following: {
+    type: Number,
+    default: 0,
+  },
+});
+
 const User = new mongoose.Schema(
   {
     msv: String,
@@ -27,6 +38,7 @@ const User = new mongoose.Schema(
       type: String,
       default: "",
     },
+    follow: [Follow],
   },
   { timestamps: true }
 );

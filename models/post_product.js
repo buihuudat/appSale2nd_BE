@@ -1,5 +1,13 @@
 const mongoose = require("mongoose");
 
+const User = new mongoose.Schema(
+  {
+    user_id: mongoose.Types.ObjectId,
+    phone: String,
+  },
+  { _id: false }
+);
+
 const Image = new mongoose.Schema(
   {
     url: {
@@ -20,7 +28,7 @@ const Location = new mongoose.Schema(
 
 const Post_product = new mongoose.Schema(
   {
-    user: mongoose.Types.ObjectId,
+    user: [User],
     location: [Location],
     images: [Image],
     title: String,

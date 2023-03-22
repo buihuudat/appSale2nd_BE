@@ -21,7 +21,6 @@ module.exports = {
   },
   update: (req, res) => {
     co(function* () {
-      console.log(req.body);
       yield User.findByIdAndUpdate(req.params.id, req.body);
       return Promise.reject({ success: true, message: "Cập nhật thành công" });
     })
@@ -41,7 +40,6 @@ module.exports = {
   },
 
   changeAvatar: (req, res) => {
-    console.log(123);
     co(function* () {
       yield User.findByIdAndUpdate(req.params.id, { avatar: req.body.avatar });
       return Promise.reject({
