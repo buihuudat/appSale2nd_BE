@@ -36,14 +36,14 @@ module.exports = {
       });
       if (!checkUser) {
         const favourite = await Favourite.create(data);
-        return res.status(201).json(favourite);
+        return res.status(201).json({ favourite, status: "add" });
       }
       const checkUserPost = await Favourite.findOne({
         user_id,
         "post.post_id": post_id,
       });
       if (!checkUserPost) {
-        const addPost = await Favourite.findOneAndUpdate(
+        await Favourite.findOneAndUpdate(
           {
             user_id,
           },
@@ -51,7 +51,7 @@ module.exports = {
         );
         return res.status(200).json({ status: "add" });
       }
-      const delPost = await Favourite.findOneAndUpdate(
+      await Favourite.findOneAndUpdate(
         {
           user_id,
         },

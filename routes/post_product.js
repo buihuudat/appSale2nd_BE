@@ -15,6 +15,7 @@ router.post(
   postController.create
 );
 router.get("/", postController.gets);
+router.post("/:user_id", postController.userGet);
 router.put("/", postController.update);
 router.put("/:id", postController.updateStatusPost);
 router.delete("/:id", postController.delete);

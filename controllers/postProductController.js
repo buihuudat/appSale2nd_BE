@@ -34,6 +34,18 @@ module.exports = {
     }
   },
 
+  userGet: async (req, res) => {
+    const { user_id } = req.params;
+    try {
+      const posts = await post_product.find({
+        "user.user_id": user_id,
+      });
+      return res.status(200).json(posts);
+    } catch (e) {
+      return res.status(500).json(e);
+    }
+  },
+
   gets: async (req, res) => {
     try {
       const posts = await post_product.find();
