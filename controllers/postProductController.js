@@ -10,6 +10,15 @@ module.exports = {
     }
   },
 
+  get: async (req, res) => {
+    try {
+      const posts = await post_product.findById(req.params.id);
+      return res.status(200).json(posts);
+    } catch (e) {
+      return res.status(500).json(e);
+    }
+  },
+
   update: async (req, res) => {
     try {
       const post = await post_product.findByIdAndUpdate(req.body._id, req.body);

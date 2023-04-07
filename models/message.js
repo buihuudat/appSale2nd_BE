@@ -4,22 +4,18 @@ const Message = new mongoose.Schema(
   {
     message: {
       text: String,
-      image: String,
+      images: Array,
       file: String,
     },
     users: Array,
     sender: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "users",
       required: true,
     },
-    groupName: {
-      type: String,
-      default: "",
-    },
-    group: {
-      type: Boolean,
-      default: false,
+    lastMessage: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Message",
     },
   },
   { timestamps: true }

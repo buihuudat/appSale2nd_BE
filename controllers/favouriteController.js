@@ -4,20 +4,14 @@ module.exports = {
   get: async (req, res) => {
     const { user_id, post_id } = req.params;
     try {
-      const checkUser = await Favourite.findOne({
-        user_id,
-      });
-      if (!checkUser) {
-        return res.status(501).json([]);
-      }
-      const checkUserPost = await Favourite.findOne({
+      const favouritePost = await Favourite.findOne({
         user_id,
         "post.post_id": post_id,
       });
-      if (!checkUserPost) {
+      if (!favouritePost) {
         return res.status(502).json({});
       }
-      return res.status(200).json(checkUserPost);
+      return res.status(200).json(favouritePost);
     } catch (e) {
       return res.status(500).json(e);
     }
@@ -38,26 +32,40 @@ module.exports = {
         const favourite = await Favourite.create(data);
         return res.status(201).json({ favourite, status: "add" });
       }
-      const checkUserPost = await Favourite.findOne({
-        user_id,
-        "post.post_id": post_id,
-      });
+
+      const updateData = {};
+      let status = "del";
+      const checkUserPost = await Favourite.findOneAndUpdate(
+        {
+          user_id,
+          "post.post_id": post_id,
+        },
+        { $pull: { post: { post_id } } },
+        { new: true }
+      );
       if (!checkUserPost) {
-        await Favourite.findOneAndUpdate(
-          {
-            user_id,
-          },
-          { $push: { post: { post_id } } }
-        );
-        return res.status(200).json({ status: "add" });
+        updateData.$push = { post: { post_id } };
+        status = "add";
+      } else {
+        updateData.$pull = { post: { post_id } };
       }
-      await Favourite.findOneAndUpdate(
+      const updatedFavourite = await Favourite.findOneAndUpdate(
         {
           user_id,
         },
-        { $pull: { post: { post_id } } }
+        updateData,
+        { new: true }
       );
-      return res.status(200).json({ status: "del" });
+      return res.status(200).json({ status });
+    } catch (e) {
+      return res.status(500).json(e);
+    }
+  },
+  gets: async (req, res) => {
+    const { user_id } = req.params;
+    try {
+      const posts = await Favourite.find({ user_id });
+      return res.status(200).json(posts);
     } catch (e) {
       return res.status(500).json(e);
     }

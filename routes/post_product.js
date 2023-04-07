@@ -15,6 +15,7 @@ router.post(
   postController.create
 );
 router.get("/", postController.gets);
+router.get("/:id", postController.get);
 router.post("/:user_id", postController.userGet);
 router.put("/", postController.update);
 router.put("/:id", postController.updateStatusPost);

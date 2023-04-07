@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 require("dotenv").config();
-
 /**
  * Module dependencies.
  */
@@ -8,12 +7,12 @@ require("dotenv").config();
 const app = require("../app");
 const debug = require("debug")("server:server");
 const http = require("http");
+const socket = require("socket.io");
 
 /**
  * Get port from environment and store in Express.
  */
 
-const URI_DB = process.env.URI_DB;
 const port = normalizePort(process.env.PORT || "5000");
 app.set("port", port);
 
@@ -28,18 +27,48 @@ const mongoose = require("mongoose");
  * Listen on provided port, on all network interfaces.
  */
 
-mongoose.set("strictQuery", true);
+mongoose.set("strictQuery", false);
 mongoose
-  .connect(URI_DB, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    server.listen(port);
-    server.on("error", onError);
-    server.on("listening", onListening);
-    console.log("Connect successfully");
+  .connect(process.env.URL_DB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
-  .catch((e) => {
-    console.log("Connect failure", e);
+  .then(() => {
+    console.log("DB Connetion Successfull");
+  })
+  .catch((err) => {
+    console.log(err.message);
   });
+
+const sv = server.listen(port, () => {
+  console.log(`Server started on ${process.env.PORT}`);
+});
+server.on("error", onError);
+server.on("listening", onListening);
+
+const io = socket(sv, {
+  cors: {
+    origin: "http://192.168.1.10:19000",
+    credentials: true,
+  },
+});
+
+global.onlineUsers = new Map();
+io.on("connection", (socket) => {
+  console.log("connected socket");
+  global.chatSocket = socket;
+  socket.on("user", (userId) => {
+    onlineUsers.set(userId, socket.id);
+  });
+
+  socket.on("send-msg", (data) => {
+    const sendUserSocket = onlineUsers.get(data.to);
+    if (sendUserSocket) {
+      socket.to(sendUserSocket).emit("msg-recieve", data);
+      console.log(data);
+    }
+  });
+});
 
 /**
  * Normalize a port into a number, string, or false.
