@@ -41,11 +41,10 @@ module.exports = {
 
   changeAvatar: (req, res) => {
     co(function* () {
-      yield User.findByIdAndUpdate(req.params.id, { avatar: req.body.avatar });
-      return Promise.reject({
-        success: true,
-        message: "Cập nhập ảnh đại diện thành công",
+      const user = yield User.findByIdAndUpdate(req.params.id, {
+        avatar: req.body.avatar,
       });
+      return user;
     })
       .then((data) => res.status(200).json(data))
       .catch((err) => res.status(500).json(err));
