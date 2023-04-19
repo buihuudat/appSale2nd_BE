@@ -5,8 +5,8 @@ const validation = require("../handlers/validation");
 const user = require("../models/user");
 
 // router.post("/:id", userController.find);
+router.put("/update-avatar/:id", userController.changeAvatar);
 router.get("/:id", userController.get);
-router.put("/change-avatar/:id", userController.changeAvatar);
 router.put(
   "/:id",
   body("fullname")
@@ -18,16 +18,12 @@ router.put(
     .withMessage("Mã sinh viên không hợp lệ")
     .custom(async (msv) => {
       return await user.findOne({ msv }).then((user) => {
-        if (user) {
+        if (user && user.msv !== msv) {
           return Promise.reject("Mã sinh viên này đã được sử dụng");
         }
       });
     }),
-  body("email")
-    .isEmpty()
-    .withMessage("Email không được để trống")
-    .isEmail()
-    .withMessage("Email không hợp lệ"),
+  body("email").trim().isEmail().withMessage("Email không hợp lệ"),
   body("password")
     .isLength({ min: 8 })
     .withMessage("Mật khẩu yêu cầu tối thiểu 8 kí tự"),

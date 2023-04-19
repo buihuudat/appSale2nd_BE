@@ -46,29 +46,57 @@ const sv = server.listen(port, () => {
 server.on("error", onError);
 server.on("listening", onListening);
 
-const io = socket(sv, {
-  cors: {
-    origin: "http://192.168.1.10:19000",
-    credentials: true,
-  },
-});
+const hostClient = "http://192.168.1.5:19000";
+const hostAdmin = "http://localhost:3000";
+const onlineUsers = new Map();
 
-global.onlineUsers = new Map();
-io.on("connection", (socket) => {
-  console.log("connected socket");
-  global.chatSocket = socket;
+const handleDisconnect = (userId) => {
+  onlineUsers.delete(userId);
+  console.log(`User ${userId} disconnected`);
+};
+
+const handleConnection = (socket) => {
+  console.log("Connected socket");
   socket.on("user", (userId) => {
     onlineUsers.set(userId, socket.id);
+    console.log(`User ${userId} connected`);
   });
 
   socket.on("send-msg", (data) => {
     const sendUserSocket = onlineUsers.get(data.to);
-    if (sendUserSocket) {
+    if (sendUserSocket && socket.id !== sendUserSocket) {
       socket.to(sendUserSocket).emit("msg-recieve", data);
       console.log(data);
     }
   });
+
+  socket.on("send-post", (data) => {
+    const sendUserSocket = onlineUsers.get(data);
+    console.log(data, sendUserSocket, socket.id);
+    if (sendUserSocket && socket.id !== sendUserSocket) {
+      socket.to(sendUserSocket).emit("post-recieve", data);
+      console.log(123);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    for (const [userId, socketId] of onlineUsers.entries()) {
+      if (socketId === socket.id) {
+        handleDisconnect(userId);
+        break;
+      }
+    }
+  });
+};
+
+const io = socket(sv, {
+  cors: {
+    origin: [hostAdmin, hostClient],
+    credentials: true,
+  },
 });
+
+io.on("connection", handleConnection);
 
 /**
  * Normalize a port into a number, string, or false.

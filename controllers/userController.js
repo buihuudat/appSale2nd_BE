@@ -1,6 +1,7 @@
 const { co } = require("co");
 const User = require("../models/user");
 const validator = require("validator");
+const CryptoJS = require("crypto-js");
 
 module.exports = {
   gets: (req, res) => {
@@ -19,13 +20,22 @@ module.exports = {
       .then((data) => res.status(200).json(data))
       .catch((err) => res.status(500).json(err));
   },
-  update: (req, res) => {
-    co(function* () {
-      yield User.findByIdAndUpdate(req.params.id, req.body);
-      return Promise.reject({ success: true, message: "Cập nhật thành công" });
-    })
-      .then((data) => res.status(200).json(data))
-      .catch((err) => res.status(500).json(err));
+  update: async (req, res) => {
+    const { password } = req.body;
+    try {
+      const user = await User.findById(req.body._id);
+      if (user.password !== req.body.password) {
+        req.body.password = CryptoJS.AES.encrypt(
+          password,
+          process.env.PASSWORD_SECRET_KEY
+        ).toString();
+      }
+
+      const rs = await User.findByIdAndUpdate(req.params.id, req.body);
+      return res.status(200).json(rs);
+    } catch (err) {
+      return res.status(500).json(err);
+    }
   },
   delete: (req, res) => {
     co(function* () {

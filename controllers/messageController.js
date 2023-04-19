@@ -31,9 +31,9 @@ module.exports = {
         },
       }).sort({ updatedAt: -1 });
 
-      const messData = messages.map((mess, { _id }) => {
+      const messData = messages.map((mess) => {
         return {
-          _id,
+          _id: mess._id,
           fromSelf: mess.sender.toString() === from,
           messages: {
             text: mess.message?.text,
