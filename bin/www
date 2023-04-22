@@ -46,7 +46,7 @@ const sv = server.listen(port, () => {
 server.on("error", onError);
 server.on("listening", onListening);
 
-const hostClient = "http://192.168.1.5:19000";
+const hostClient = "http://192.168.1.8:19000";
 const hostAdmin = "http://localhost:3000";
 const onlineUsers = new Map();
 
